@@ -1,27 +1,28 @@
 import { asyncHandler, errorHandler } from "../utilities/utilityIndex.js";
 import Conversation from '../models/conversationModel.js'
 import Message from '../models/message.model.js'
+import { getSocketId, io } from "../socket/socket.js";
 
 export const sendMessage = asyncHandler(async (req, res) => {
     const senderId = req.user._id;
-    const recieverId = req.params.id;
+    const receiverId = req.params.id;
     const message = req.body.message;
 
     let conversation = await Conversation.findOne({
         participants: {
-            $all: [senderId, recieverId]
+            $all: [senderId, receiverId]
         }
     })
 
     if (!conversation) {
         conversation = await Conversation.create({
-            participants: [senderId, recieverId]
+            participants: [senderId, receiverId]
         })
     }
 
     const newMessage = await Message.create({
         sender: senderId,
-        recieverId,
+        receiverId,
         message,
     })
 
@@ -31,6 +32,10 @@ export const sendMessage = asyncHandler(async (req, res) => {
     }
 
     // socket
+    const receiverSocketId = getSocketId(receiverId);
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit('newMessage', newMessage)
+    }
 
     res.status(201).json({
         success: true,
@@ -42,10 +47,10 @@ export const sendMessage = asyncHandler(async (req, res) => {
 
 export const getMessages = asyncHandler(async (req, res, next) => {
     const senderId = req.user._id;
-    const recieverId = req.params.recieverId;
+    const receiverId = req.params.receiverId;
     const conversation = await Conversation.findOne({
         participants: {
-            $all: [senderId, recieverId]
+            $all: [senderId, receiverId]
         }
     }).populate('messages')
 
