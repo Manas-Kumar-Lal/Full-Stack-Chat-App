@@ -2,9 +2,12 @@ import React, { useState } from 'react'
 import { FaRegUser } from "react-icons/fa6";
 import { TbLockPassword } from "react-icons/tb";
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux'
+import { loginUserThunk } from '../store/slices/user/user.thunk';
 
 const Login = () => {
 
+  const dispatch = useDispatch();
   const [loginData, setLoginData] = useState({
     username: '',
     password: ''
@@ -15,6 +18,10 @@ const Login = () => {
       ...prev,
       [e.target.name]: e.target.value
     }))
+  }
+
+  const handleSubmit = () => {
+    dispatch(loginUserThunk());
   }
 
   return (
@@ -38,7 +45,7 @@ const Login = () => {
           <Link to={'/signup'} className='text-blue-400 underline'>Signup</Link>
         </p>
 
-        <button className='btn btn-primary'>Submit</button>
+        <button onClick={handleSubmit} className='btn btn-primary'>Submit</button>
       </div>
     </div>
   )
