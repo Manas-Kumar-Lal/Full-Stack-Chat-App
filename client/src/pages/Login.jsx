@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import { FaRegUser } from "react-icons/fa6";
 import { TbLockPassword } from "react-icons/tb";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux'
 import { loginUserThunk } from '../store/slices/user/user.thunk';
 
 const Login = () => {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     username: '',
     password: ''
@@ -20,8 +21,11 @@ const Login = () => {
     }))
   }
 
-  const handleSubmit = () => {
-    dispatch(loginUserThunk());
+  const handleSubmit = async () => {
+    const response = await dispatch(loginUserThunk(loginData));
+    if (response?.payload?.success) {
+      navigate('/');
+    }
   }
 
   return (

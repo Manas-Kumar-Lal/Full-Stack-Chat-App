@@ -7,16 +7,16 @@ export const register = asyncHandler(async (req, res, next) => {
     const { fullName, username, password, confirmPassword, gender } = req.body;
 
     if (!fullName || !username || !confirmPassword || !gender) {
-        return res.status(400).json({ message: 'All fields are required' });
+        return next(new errorHandler("All fields are required'", 400))
     }
 
     if (password !== confirmPassword) {
-        return next(new errorHandler("Password and confirm password do not match!"));
+        return next(new errorHandler("Password and confirm password do not match!", 400));
     }
 
     const userWithUsername = await User.findOne({ username });
     if (userWithUsername) {
-        return next(new errorHandler("Username already exists!"));
+        return next(new errorHandler("Username already exists!", 400));
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -40,17 +40,17 @@ export const register = asyncHandler(async (req, res, next) => {
 
 export const login = asyncHandler(async (req, res, next) => {
     const { username, password } = req.body;
-    if (username, password) {
-        return res.status(200).json({ message: 'All Fields are required' });
+    if (!username || !password) {
+        return next(new errorHandler("All Fields are required", 400))
     }
     const user = await User.findOne({ username });
     if (!user) {
-        return next(new errorHandler("Invalid username or password!"));
+        return next(new errorHandler("Invalid username or password!", 400));
     }
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-        return next(new errorHandler("Invalid username or password!"));
+        return next(new errorHandler("Invalid username or password!", 400));
     }
     const tokenData = {
         userId: user._id,
@@ -59,7 +59,7 @@ export const login = asyncHandler(async (req, res, next) => {
         gender: user.gender,
     }
 
-    const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: process.env.SECRET_EXPIRATION });
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: process.env.COOKIE_EXPIRATION });
 
     return res
         .status(200)
@@ -74,7 +74,7 @@ export const login = asyncHandler(async (req, res, next) => {
             success: true,
             message: "Login successful",
             responseData: {
-                ...user,
+                user,
                 token,
             }
         })

@@ -1,16 +1,20 @@
 import React, { useState } from 'react'
 import { TbLockPassword } from "react-icons/tb";
 import { FaRegUser } from "react-icons/fa6";
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { signupUserThunk } from '../store/slices/user/user.thunk';
 
 const Signup = () => {
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [signupData, setSignupData] = useState({
     fullName: '',
     username: '',
     password: '',
     confirmPassword: '',
-    gender: '',
+    gender: 'male',
   })
 
   const handleInputChange = (e) => {
@@ -18,6 +22,13 @@ const Signup = () => {
       ...prev,
       [e.target.name]: e.target.value
     }))
+  }
+
+  const handleSubmit = async () => {
+    const response = await dispatch(signupUserThunk(signupData))
+    if (response?.payload?.success) {
+      navigate('/');
+    }
   }
 
   return (
@@ -62,7 +73,7 @@ const Signup = () => {
           <Link to={'/login'} className='text-blue-400 underline'>Login</Link>
         </p>
 
-        <button className='btn btn-primary'>Submit</button>
+        <button onClick={handleSubmit} className='btn btn-primary'>Submit</button>
       </div>
     </div>
   )

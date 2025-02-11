@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUserThunk } from './user.thunk.js'
+import { loginUserThunk, signupUserThunk } from './user.thunk.js'
 
 const initialState = {
     isAuthenticated: false
@@ -18,15 +18,25 @@ const userSlice = createSlice({
         // Login user
         builder.addCase(loginUserThunk.pending, (state) => {
             state.isAuthenticated = false;
-            console.log("pending status");
         })
-        builder.addCase(loginUserThunk.fulfilled, (state) => {
+        builder.addCase(loginUserThunk.fulfilled, (state, action) => {
             state.isAuthenticated = true
-            console.log("fullfilled");
+            console.log(action.payload);
         })
-        builder.addCase(loginUserThunk.rejected, (state) => {
+        builder.addCase(loginUserThunk.rejected, (state, action) => {
             state.isAuthenticated = false
-            console.log("rejected");
+        })
+
+        // signup user
+        builder.addCase(signupUserThunk.pending, (state) => {
+            state.isAuthenticated = false;
+        })
+        builder.addCase(signupUserThunk.fulfilled, (state, action) => {
+            state.isAuthenticated = true
+            console.log(action.payload);
+        })
+        builder.addCase(signupUserThunk.rejected, (state, action) => {
+            state.isAuthenticated = false
         })
 
     }
