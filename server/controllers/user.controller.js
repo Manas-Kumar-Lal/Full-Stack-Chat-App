@@ -59,7 +59,7 @@ export const login = asyncHandler(async (req, res, next) => {
         gender: user.gender,
     }
 
-    const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: process.env.COOKIE_EXPIRATION });
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
 
     return res
         .status(200)
@@ -85,6 +85,14 @@ export const logout = asyncHandler(async (req, res, next) => {
         .cookie("token", "", { expires: new Date(0), httpOnly: true })
         .json({ success: true, message: "Logged out successfully" });
 });
+
+export const getUserProfile = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user._id);
+    res.send({
+        success: true,
+        responseData: user,
+    })
+})
 
 export const getUsersExceptMe = asyncHandler(async (req, res, next) => {
     const users = await User.find({ _id: { $ne: req.user._id } })
