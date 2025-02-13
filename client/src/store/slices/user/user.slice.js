@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUserThunk, signupUserThunk, getUserProfileThunk } from './user.thunk.js'
+import { loginUserThunk, signupUserThunk, getUserProfileThunk, logoutThunk, getOtherUsersThunk } from './user.thunk.js'
 
 
 const initialState = {
     isAuthenticated: false,
     screenLoading: true,
+    profileData:{},
+    otherUsers: [],
 }
 
 const userSlice = createSlice({
@@ -41,17 +43,41 @@ const userSlice = createSlice({
             state.isAuthenticated = false
         })
 
-        // sget user profile
+        // logout user
+        builder.addCase(logoutThunk.pending, (state) => {
+            // nothing to do
+        })
+        builder.addCase(logoutThunk.fulfilled, (state, action) => {
+            state.isAuthenticated = false
+            console.log(action.payload);
+        })
+        builder.addCase(logoutThunk.rejected, (state, action) => {
+            // nothing to do
+        })
+
+        // get user profile
         builder.addCase(getUserProfileThunk.pending, (state) => {
             state.isAuthenticated = false;
         })
         builder.addCase(getUserProfileThunk.fulfilled, (state, action) => {
             state.isAuthenticated = true
             state.screenLoading = false;
-            console.log(action.payload);
+            state.profileData = action.payload.responseData;
         })
         builder.addCase(getUserProfileThunk.rejected, (state, action) => {
             state.isAuthenticated = false
+            state.screenLoading = false;
+        })
+
+        // get other users
+        builder.addCase(getOtherUsersThunk.pending, (state) => {
+            //    do nothing
+        })
+        builder.addCase(getOtherUsersThunk.fulfilled, (state, action) => {
+            state.screenLoading = false;
+            state.otherUsers = action.payload.responseData;
+        })
+        builder.addCase(getOtherUsersThunk.rejected, (state, action) => {
             state.screenLoading = false;
         })
 

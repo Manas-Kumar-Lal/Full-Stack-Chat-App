@@ -10,6 +10,7 @@ export const loginUserThunk = createAsyncThunk(
                 username,
                 password
             });
+            toast.success("Loggin Successfull..!!")
             return response.data
         } catch (error) {
             console.log(error);
@@ -41,11 +42,42 @@ export const signupUserThunk = createAsyncThunk(
     },
 )
 
+export const logoutThunk = createAsyncThunk(
+    'user/logout',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post("user/logout");
+            toast.success("Logout Sucessfully..!!")
+            return response.data
+        } catch (error) {
+            console.log(error);
+            const outputErr = error.response.data.errMessage || "Unexpected error, Please refresh the page..!!"
+            toast.error(outputErr)
+            return rejectWithValue(outputErr);
+        }
+    },
+)
+
 export const getUserProfileThunk = createAsyncThunk(
     'user/profile',
     async (_, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.get("user/profile");
+            return response.data
+        } catch (error) {
+            console.log(error);
+            const outputErr = error.response.data.errMessage || "Unexpected error, Please refresh the page..!!"
+            toast.error(outputErr)
+            return rejectWithValue(outputErr);
+        }
+    },
+)
+
+export const getOtherUsersThunk = createAsyncThunk(
+    'user/getOtherUsers',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get("user/get-other-users");
             return response.data
         } catch (error) {
             console.log(error);
