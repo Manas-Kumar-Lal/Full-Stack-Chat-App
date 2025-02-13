@@ -40,3 +40,18 @@ export const signupUserThunk = createAsyncThunk(
         }
     },
 )
+
+export const getUserProfileThunk = createAsyncThunk(
+    'user/profile',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get("user/profile");
+            return response.data
+        } catch (error) {
+            console.log(error);
+            const outputErr = error.response.data.errMessage || "Unexpected error, Please refresh the page..!!"
+            toast.error(outputErr)
+            return rejectWithValue(outputErr);
+        }
+    },
+)

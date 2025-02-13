@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUserThunk, signupUserThunk } from './user.thunk.js'
+import { loginUserThunk, signupUserThunk, getUserProfileThunk } from './user.thunk.js'
+
 
 const initialState = {
-    isAuthenticated: false
+    isAuthenticated: false,
+    screenLoading: true,
 }
 
 const userSlice = createSlice({
@@ -37,6 +39,20 @@ const userSlice = createSlice({
         })
         builder.addCase(signupUserThunk.rejected, (state, action) => {
             state.isAuthenticated = false
+        })
+
+        // sget user profile
+        builder.addCase(getUserProfileThunk.pending, (state) => {
+            state.isAuthenticated = false;
+        })
+        builder.addCase(getUserProfileThunk.fulfilled, (state, action) => {
+            state.isAuthenticated = true
+            state.screenLoading = false;
+            console.log(action.payload);
+        })
+        builder.addCase(getUserProfileThunk.rejected, (state, action) => {
+            state.isAuthenticated = false
+            state.screenLoading = false;
         })
 
     }

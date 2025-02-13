@@ -1,14 +1,15 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TbLockPassword } from "react-icons/tb";
 import { FaRegUser } from "react-icons/fa6";
 import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { signupUserThunk } from '../store/slices/user/user.thunk';
 
 const Signup = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector(state => state.userReducer);
   const [signupData, setSignupData] = useState({
     fullName: '',
     username: '',
@@ -16,6 +17,11 @@ const Signup = () => {
     confirmPassword: '',
     gender: 'male',
   })
+
+  useEffect(() => {
+    console.log(isAuthenticated);
+    if (isAuthenticated) navigate('/');
+  }, [isAuthenticated])
 
   const handleInputChange = (e) => {
     setSignupData(prev => ({

@@ -1,18 +1,24 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaRegUser } from "react-icons/fa6";
 import { TbLockPassword } from "react-icons/tb";
 import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { loginUserThunk } from '../store/slices/user/user.thunk';
 
 const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector(state => state.userReducer);
   const [loginData, setLoginData] = useState({
     username: '',
     password: ''
   })
+
+  useEffect(() => {
+    console.log(isAuthenticated);
+    if (isAuthenticated) navigate('/');
+  }, [isAuthenticated])
 
   const handleInputChange = (e) => {
     setLoginData(prev => ({
