@@ -5,16 +5,17 @@ import { loginUserThunk, signupUserThunk, getUserProfileThunk, logoutThunk, getO
 const initialState = {
     isAuthenticated: false,
     screenLoading: true,
-    profileData:{},
-    otherUsers: [],
+    profileData: null,
+    otherUsers: null,
+    selectedUser: null,
 }
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        setAuthUser: (state, action) => {
-            state.user = action.payload
+        setSelectedUser: (state, action) => {
+            state.selectedUser = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -25,7 +26,7 @@ const userSlice = createSlice({
         })
         builder.addCase(loginUserThunk.fulfilled, (state, action) => {
             state.isAuthenticated = true
-            console.log(action.payload);
+            state.profileData = action.payload?.responseData.user;
         })
         builder.addCase(loginUserThunk.rejected, (state, action) => {
             state.isAuthenticated = false
@@ -37,7 +38,7 @@ const userSlice = createSlice({
         })
         builder.addCase(signupUserThunk.fulfilled, (state, action) => {
             state.isAuthenticated = true
-            console.log(action.payload);
+            state.profileData = action.payload?.responseData.user;
         })
         builder.addCase(signupUserThunk.rejected, (state, action) => {
             state.isAuthenticated = false
@@ -48,8 +49,10 @@ const userSlice = createSlice({
             // nothing to do
         })
         builder.addCase(logoutThunk.fulfilled, (state, action) => {
-            state.isAuthenticated = false
-            console.log(action.payload);
+            state.isAuthenticated = false;
+            state.otherUsers = null;
+            state.profileData = null;
+            state.selectedUser = null;
         })
         builder.addCase(logoutThunk.rejected, (state, action) => {
             // nothing to do
@@ -84,6 +87,6 @@ const userSlice = createSlice({
     }
 })
 
-export const { setAuthUser } = userSlice.actions
+export const { setSelectedUser } = userSlice.actions
 const userReducer = userSlice.reducer;
 export { userReducer }

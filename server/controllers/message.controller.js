@@ -5,7 +5,7 @@ import { getSocketId, io } from "../socket/socket.js";
 
 export const sendMessage = asyncHandler(async (req, res) => {
     const senderId = req.user._id;
-    const receiverId = req.params.id;
+    const receiverId = req.params.receiverId;
     const message = req.body.message;
 
     let conversation = await Conversation.findOne({
@@ -21,7 +21,7 @@ export const sendMessage = asyncHandler(async (req, res) => {
     }
 
     const newMessage = await Message.create({
-        sender: senderId,
+        senderId: senderId,
         receiverId,
         message,
     })
@@ -40,7 +40,6 @@ export const sendMessage = asyncHandler(async (req, res) => {
     res.status(201).json({
         success: true,
         message: "Message sent successfully",
-        conversation,
         newMessage,
     })
 })

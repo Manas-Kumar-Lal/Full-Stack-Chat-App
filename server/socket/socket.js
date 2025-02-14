@@ -13,7 +13,7 @@ const io = new Server(server, {
 const userSocketMap = {}; // {userId : socketId}
 
 const getSocketId = (userId) => {
-    return userSocketMap(userId);
+    return userSocketMap[userId];
 }
 
 io.on('connection', (socket) => {

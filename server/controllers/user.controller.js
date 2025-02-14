@@ -32,10 +32,32 @@ export const register = asyncHandler(async (req, res, next) => {
         avatar,
     })
 
-    res.send({
-        success: true,
-        responseData: user,
-    })
+    const tokenData = {
+        userId: user._id,
+        username: user.username,
+        fullName: user.fullName,
+        gender: user.gender,
+    }
+
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+
+    return res
+        .status(200)
+        .cookie("token", token, {
+            expires: new Date(Date.now() + process.env.COOKIE_EXPIRATION * 1000),
+            httpOnly: true,
+            sameSite: 'None',
+            httpOnly: true,
+            secure: true,
+        })
+        .json({
+            success: true,
+            message: "Login successful",
+            responseData: {
+                user,
+                token,
+            }
+        })
 })
 
 export const login = asyncHandler(async (req, res, next) => {
@@ -94,7 +116,7 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
     })
 })
 
-export const getUsersExceptMe = asyncHandler(async (req, res, next) => {
+export const getOtherUsers = asyncHandler(async (req, res, next) => {
     const users = await User.find({ _id: { $ne: req.user._id } })
     res.status(200).json({
         success: true,
